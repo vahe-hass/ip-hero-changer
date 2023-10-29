@@ -11,8 +11,6 @@
  	exit;
  }
 
- use MaxMind\Db\Reader;
-
  //function to create the database table during plugin activation
  function ip_hero_changer_table() {
      global $wpdb;
@@ -42,41 +40,79 @@
 function delete_ip_hero_changer_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'ip_hero_changer';
-
     $sql = "DROP TABLE IF EXISTS $table_name;";
-
     $wpdb->query($sql);
 }
 
 register_uninstall_hook(__FILE__, 'delete_ip_hero_changer_table');
 
+function ihc_admin_page() {
+    // Render the admin page content, including the form to input the IP range
+    echo '<div class="wrap">';
+    echo '<h2>Your Plugin Admin Page</h2><br>';
+    echo '<form method="post" action="">';
+    echo '<label for="ip_range">Enter IP Range:</label>';
+    echo '<input type="text" id="ip_range" name="ip_range" />';
+    echo '<input type="submit" name="check_ip_range" value="Check" class="button-primary" />';
+    echo '</form>';
+    echo '</div>';
 
-function get_user_location($ip) {
-    // Replace 'YOUR_API_KEY' with your MaxMind API key
-    $apiKey = 'YOUR_API_KEY';
-
-    // Path to the MaxMind GeoIP2 database file
-    $dbPath = 'path-to-maxmind-database.mmdb';
-
-    $reader = new Reader($dbPath);
-
-    try {
-        $record = $reader->city($ip);
-
-        // Extract location information
-        $location = array(
-            'city' => $record->city->name,
-            'region' => $record->mostSpecificSubdivision->name,
-            'country' => $record->country->name,
-        );
-
-        return $location;
-    } catch (Exception $e) {
-        // Handle errors
-        return array(
-            'city' => 'Unknown',
-            'region' => 'Unknown',
-            'country' => 'Unknown',
-        );
+    // Handle form submissions here
+    if (isset($_POST['check_ip_range'])) {
+        $ip_range = sanitize_text_field($_POST['ip_range']);
+        // Process the IP range and perform the necessary actions
+        // ...
     }
 }
+
+// Add an admin menu item linking to your admin page callback function
+function ihc_add_admin_menu() {
+    add_menu_page('IP Hero Changer', 'IP Hero Changer', 'manage_options', 'ip-hero-changer-admin', 'ihc_admin_page');
+}
+add_action('admin_menu', 'ihc_add_admin_menu');
+
+
+// gets visitors IP address using the server
+function wp_get_visitor_ip() {
+    if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+function ihc_log_user_ip() {
+    global $wpdb;
+
+    if (is_front_page()) {
+        if (!session_id()) {
+            session_start();
+        }
+
+        if (isset($_SESSION['ip_logged'])) {
+            return;
+        }
+
+        $user_ip = wp_get_visitor_ip();
+        $table_name = $wpdb->prefix . 'ip_hero_changer';
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+            $wpdb->insert(
+                $table_name,
+                array(
+                    'variation_id' => 0,
+                    'user_ip' => $user_ip,
+                    'action' => 'visit',
+                )
+            );
+        }
+
+        $_SESSION['ip_logged'] = true;
+    }
+}
+
+// Hook the function to run upon webpage request (e.g., when a page is loaded)
+add_action('template_redirect', 'ihc_log_user_ip');
+
+// function that checks the given ip range from admin and then callback another JS function
