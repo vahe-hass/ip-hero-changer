@@ -21,13 +21,14 @@
 
          // Define the table structure
          $sql = "CREATE TABLE $table_name (
-             id mediumint(9) NOT NULL AUTO_INCREMENT,
-             variation_id mediumint(9) NOT NULL,
-             user_ip varchar(45) NOT NULL,
-             action varchar(20) NOT NULL,
-             timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-             PRIMARY KEY (id)
-         ) $charset_collate;";
+            id int(11) NOT NULL AUTO_INCREMENT,
+            user_country varchar(255) NOT NULL,
+            user_state varchar(255),
+            user_city varchar(255),
+            user_option varchar(1) NOT NULL,
+            submission_date datetime NOT NULL,
+            PRIMARY KEY (id)
+        ) $charset_collate;";
 
          require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
          dbDelta($sql);
@@ -46,23 +47,49 @@ function delete_ip_hero_changer_table() {
 
 register_uninstall_hook(__FILE__, 'delete_ip_hero_changer_table');
 
+function ihc_enqueue_admin_scripts() {
+    wp_enqueue_script('ihc-admin-script', plugins_url('/admin-script.js', __FILE__), array('jquery'), '1.0', true);
+}
+
+add_action('admin_enqueue_scripts', 'ihc_enqueue_admin_scripts');
+
 function ihc_admin_page() {
-    // Render the admin page content, including the form to input the IP range
     echo '<div class="wrap">';
     echo '<h2>Your Plugin Admin Page</h2><br>';
-    echo '<form method="post" action="">';
-    echo '<label for="ip_range">Enter IP Range:</label>';
-    echo '<input type="text" id="ip_range" name="ip_range" />';
-    echo '<input type="submit" name="check_ip_range" value="Check" class="button-primary" />';
-    echo '</form>';
-    echo '</div>';
+    echo '<h2>Enter Your Location</h2>
+    <form id="location-form">
+        <label for="country">Country:</label>
+        <select id="country" name="country" required>
+            <option value="USA" selected>United States</option>
+            <!-- You can add more countries here if needed -->
+        </select><br>
 
-    // Handle form submissions here
-    if (isset($_POST['check_ip_range'])) {
-        $ip_range = sanitize_text_field($_POST['ip_range']);
-        // Process the IP range and perform the necessary actions
-        // ...
-    }
+        <label for="region">State:</label>
+        <select id="region" name="state" required>
+            <option value="" disabled selected>Select a state</option>
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <option value="AR">Arkansas</option>
+            <option value="CA">California</option>
+            <!-- Add cities for all 50 states -->
+            <option value="WY">Wyoming</option>
+        </select><br>
+
+        <label for="city">City:</label>
+        <select id="city" name="city" required>
+            <option value="" disabled selected>Select a city</option>
+        </select><br>
+
+        <label>Choose Option:</label>
+        <input type="radio" id="optionA" name="option" value="A" required>
+        <label for="optionA">A</label>
+        <input type="radio" id="optionB" name="option" value="B" required>
+        <label for="optionB">B</label><br>
+
+        <input type="submit" value="Submit">
+        <div id="response-message"></div>
+    </form>';
 }
 
 // Add an admin menu item linking to your admin page callback function
@@ -82,37 +109,3 @@ function wp_get_visitor_ip() {
         return $_SERVER['REMOTE_ADDR'];
     }
 }
-
-function ihc_log_user_ip() {
-    global $wpdb;
-
-    if (is_front_page()) {
-        if (!session_id()) {
-            session_start();
-        }
-
-        if (isset($_SESSION['ip_logged'])) {
-            return;
-        }
-
-        $user_ip = wp_get_visitor_ip();
-        $table_name = $wpdb->prefix . 'ip_hero_changer';
-        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
-            $wpdb->insert(
-                $table_name,
-                array(
-                    'variation_id' => 0,
-                    'user_ip' => $user_ip,
-                    'action' => 'visit',
-                )
-            );
-        }
-
-        $_SESSION['ip_logged'] = true;
-    }
-}
-
-// Hook the function to run upon webpage request (e.g., when a page is loaded)
-add_action('template_redirect', 'ihc_log_user_ip');
-
-// function that checks the given ip range from admin and then callback another JS function
