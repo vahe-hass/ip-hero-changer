@@ -1,16 +1,16 @@
 <?php
 // Include WordPress core functions
-require_once("../../wp-load.php");
+require_once("../../../wp-load.php");
 
 // Check if the request method is POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     global $wpdb;
     $table_name = $wpdb->prefix . 'ip_hero_changer';
 
-    $user_country = sanitize_text_field($_POST["user_country"]);
-    $user_state = sanitize_text_field($_POST["user_state"]);
-    $user_city = sanitize_text_field($_POST["user_city"]);
-    $user_option = sanitize_text_field($_POST["user_option"]);
+    $user_country = sanitize_text_field($_POST["country"]);
+    $user_state = sanitize_text_field($_POST["state"]);
+    $user_city = sanitize_text_field($_POST["city"]);
+    $user_option = sanitize_text_field($_POST["option"]);
 
     $wpdb->insert(
         $table_name,
