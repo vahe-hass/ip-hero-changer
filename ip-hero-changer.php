@@ -22,15 +22,15 @@
          // Define the table structure
          $sql = "CREATE TABLE $table_name (
             id INT NOT NULL AUTO_INCREMENT,
+            user_region varchar(255) NOT NULL,
             user_country varchar(255) NOT NULL,
             user_state varchar(255),
-            user_city varchar(255),
             user_option varchar(1) NOT NULL,
             user_color varchar(7) NOT NULL,
             submission_date datetime NOT NULL,
-            user_viewed INT,
-            conversion_rate INT,
-            engagement_metrics INT,
+            user_viewed INT DEFAULT 0,
+            conversion_rate INT DEFAULT 0,
+            engagement_metrics INT DEFAULT 0,
             PRIMARY KEY (id)
         ) $charset_collate;";
 
@@ -62,6 +62,7 @@ function wp_get_visitor_ip() {
     }
 }
 
+// Add an admin menu admin page
 function ihc_admin_page() {
     $form_template_path = plugin_dir_path(__FILE__) . 'templates/ihc_form.html';
         if (file_exists($form_template_path)) {
@@ -71,25 +72,25 @@ function ihc_admin_page() {
         }
 }
 
-// Add an admin menu item linking to your admin page callback function
 function ihc_add_admin_menu() {
     add_menu_page('IP Hero Changer', 'IP Hero Changer', 'manage_options', 'ip-hero-changer-admin', 'ihc_admin_page');
 }
 add_action('admin_menu', 'ihc_add_admin_menu');
 
-
+// Add resources to the plugin admin page header
 function enqueue_ihc_resources() {
 
     if (isset($_GET['page']) && $_GET['page'] === 'ip-hero-changer-admin') {
-        // Enqueue the external CSS.
-        wp_enqueue_style('bootstrap-css', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
 
+        wp_enqueue_style('bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
 
-        // Enqueue Bootstrap JavaScript.
-        wp_enqueue_script('bootstrap-js', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array('jquery'), null, true);
+        wp_enqueue_style( 'ihc-plugin', plugins_url( 'ip-hero-changer/assets/ihc.css' ) );
+
+        wp_enqueue_script('bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', array('jquery'), null, true);
+
+        wp_enqueue_script( 'ihc-plugin', plugins_url( 'ip-hero-changer/assets/ihc.js' ) );
 
     }
 }
 
-// Hook the function to the admin_enqueue_scripts action.
 add_action('admin_enqueue_scripts', 'enqueue_ihc_resources');
