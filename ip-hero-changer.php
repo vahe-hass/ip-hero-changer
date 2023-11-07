@@ -52,7 +52,7 @@ function delete_ip_hero_changer_table() {
 register_uninstall_hook(__FILE__, 'delete_ip_hero_changer_table');
 
 // gets visitors IP address using the server
-function wp_get_visitor_ip() {
+function ihc_get_visitor_ip() {
     if (isset($_SERVER['HTTP_CLIENT_IP'])) {
         return $_SERVER['HTTP_CLIENT_IP'];
     } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -94,3 +94,85 @@ function enqueue_ihc_resources() {
 }
 
 add_action('admin_enqueue_scripts', 'enqueue_ihc_resources');
+
+
+function ihc_proceess_db_query() {
+    global $wpdb;
+
+    // Define your custom SQL query
+    $sql = "SELECT * FROM {$wpdb->prefix}ip_hero_changer WHERE user_option = 'B'";
+
+    // Execute the query
+    $results = $wpdb->get_results($sql);
+
+    // Check if there are results
+    if (!empty($results)) {
+        foreach ($results as $row) {
+            // Process each row of data
+            $user_region = $row->user_region;
+            $user_country = $row->user_country;
+            $user_state = $row->user_state;
+            $user_option = $row->user_option;
+            $user_color = $row->user_color;
+
+            // Perform your custom logic here
+        }
+
+        return array($user_region, $user_country, $user_state, $user_option, $user_color);
+
+    } else {
+        echo "No results found";
+    }
+
+};
+
+
+
+
+function ihc_main_procees() {
+    // Check if it's the homepage
+    if (is_home() || is_front_page()) {
+        // Your code to execute on the homepage for every session
+        // This code runs ok
+        // $ihc_sql = ihc_proceess_db_query();
+        $ihc_sql = array("1", "Middle East", "Afghanistan", "Kabul", "B", "#000012", "0", "1500", "ok");
+    }
+
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start(); // Start the session if it's not already started
+    }
+
+    // Check if it's a new session
+    if (!isset($_SESSION['visited_homepage'])) {
+        // Your code to execute on the homepage for a new session
+        // This code runs only on the first visit to the homepage in a new session
+        // $session_ip_address = ihc_get_visitor_ip();
+        $session_ip_address = '164.130.107.24';
+        // $response = wp_remote_get("https://ipapi.co/" . $session_ip_address . "/json/");
+        // if (is_array($response) && !is_wp_error($response)) {
+        //     $ipapi_loc = wp_remote_retrieve_body($response);
+        //     $obj = json_decode($ipapi_loc);
+        //     $country_name = $obj->{'country_name'};
+        //     $state = $obj->{'region'};
+        //
+        // } else {
+        //     $error_message = $response->get_error_message();
+        //     error_log("IHC Error: $error_message");
+        // }
+        //
+        // $ipapi_respoonse_array = array($country_name, $state);
+        $ipapi_respoonse_array = array("Afghanistan", "Kabul");
+        $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);
+
+        if (!empty($commonValues)) {
+            echo "There are common values.";
+        } else {
+            echo "There are no common values.";
+        }
+
+
+        $_SESSION['visited_homepage'] = true;
+    }
+}
+
+add_action('template_redirect', 'ihc_main_procees');
