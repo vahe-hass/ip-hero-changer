@@ -102,26 +102,22 @@ function ihc_proceess_db_query() {
     // Define your custom SQL query
     $sql = "SELECT * FROM {$wpdb->prefix}ip_hero_changer WHERE user_option = 'B'";
 
-    // Execute the query
     $results = $wpdb->get_results($sql);
 
-    // Check if there are results
     if (!empty($results)) {
         foreach ($results as $row) {
-            // Process each row of data
-            $user_region = $row->user_region;
             $user_country = $row->user_country;
             $user_state = $row->user_state;
             $user_option = $row->user_option;
             $user_color = $row->user_color;
-
-            // Perform your custom logic here
         }
 
-        return array($user_region, $user_country, $user_state, $user_option, $user_color);
+        return array($user_country, $user_state, $user_option, $user_color);
 
     } else {
+        // !add error loging here!!!!!!!!!!!!!!!!!!!
         echo "No results found";
+        return array();
     }
 
 };
@@ -135,7 +131,8 @@ function ihc_main_procees() {
         // Your code to execute on the homepage for every session
         // This code runs ok
         // $ihc_sql = ihc_proceess_db_query();
-        $ihc_sql = array("1", "Middle East", "Afghanistan", "Kabul", "B", "#000012", "0", "1500", "ok");
+        $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b");
+
     }
 
     if (session_status() == PHP_SESSION_NONE) {
@@ -161,18 +158,33 @@ function ihc_main_procees() {
         // }
         //
         // $ipapi_respoonse_array = array($country_name, $state);
+        // Note! a good function to compute the intersection of !!strings!!
+
         $ipapi_respoonse_array = array("Afghanistan", "Kabul");
+
         $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);
 
         if (!empty($commonValues)) {
-            echo "There are common values.";
-        } else {
-            echo "There are no common values.";
-        }
+            $ihc_sql_color = $ihc_sql[2];
+            add_action('wp_head', function () use ($ihc_sql_color) {
+                add_custom_inline_styles($ihc_sql_color);
+            });
 
+        } else {
+            echo "There are !!NO!! common values in your array.";
+        }
 
         $_SESSION['visited_homepage'] = true;
     }
+}
+
+function add_custom_inline_styles($ihc_sql_color) {
+
+    echo "<style type='text/css'>
+        #first-btn {
+            background-color: " . $ihc_sql_color . " !important;
+        }
+    </style>";
 }
 
 add_action('template_redirect', 'ihc_main_procees');
