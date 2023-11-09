@@ -14,22 +14,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user_option = "B";
     $user_color = sanitize_text_field($_POST["color"]);
 
-    $wpdb->insert(
-        $table_name,
-        array(
-            'user_region' => $user_region,
-            'user_country' => $user_country,
-            'user_state' => $user_state,
-            'user_option' => $user_option,
-            'user_color' => $user_color,
-            'submission_date' => current_time('mysql', 1)
-        )
-    );
+    $existing_data = $wpdb->get_results("SELECT * FROM $table_name");
 
-    if ($wpdb->last_error) {
-        echo "An error occurred while saving the options.";
-    } else {
-        echo "Selected options saved successfully.";
+    if (empty($existing_data)) {
+        $wpdb->insert(
+            $table_name,
+            array(
+                'user_region' => $user_region,
+                'user_country' => $user_country,
+                'user_state' => $user_state,
+                'user_option' => $user_option,
+                'user_color' => $user_color,
+                'submission_date' => current_time('mysql', 1)
+            )
+        );
 
         $wpdb->insert(
             $table_name,
@@ -42,10 +40,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 'submission_date' => current_time('mysql', 1)
             )
         );
+
+        if ($wpdb->last_error) {
+            error_log('IHC Error: Failed to save the form options to the database.');
+        } else {
+            echo "Selected options saved successfully.";
+        }
+    } else {
+        echo "Upgrade to the pro version to save multiple locations.";
     }
 } else {
     http_response_code(405);
     echo "Invalid request method.";
 }
+
 
 ?>

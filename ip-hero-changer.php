@@ -60,7 +60,7 @@ function ihc_get_visitor_ip() {
     } else {
         return $_SERVER['REMOTE_ADDR'];
     }
-}
+};
 
 // Add an admin menu admin page
 function ihc_admin_page() {
@@ -122,7 +122,12 @@ function ihc_proceess_db_query() {
 
 };
 
-
+function ihc_elementor_check() {
+    $elementor_page = get_post_meta( get_the_ID(), '_elementor_edit_mode', true );
+    if ( ! ! $elementor_page ) {
+        return true;
+    }
+};
 
 
 function ihc_main_procees() {
@@ -132,6 +137,7 @@ function ihc_main_procees() {
         // This code runs ok
         // $ihc_sql = ihc_proceess_db_query();
         $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b");
+
 
     }
 
@@ -167,7 +173,7 @@ function ihc_main_procees() {
         if (!empty($commonValues)) {
             $ihc_sql_color = $ihc_sql[2];
             add_action('wp_head', function () use ($ihc_sql_color) {
-                add_custom_inline_styles($ihc_sql_color);
+                ihc_styles_generator($ihc_sql_color);
             });
 
         } else {
@@ -175,16 +181,27 @@ function ihc_main_procees() {
         }
 
         $_SESSION['visited_homepage'] = true;
+        // Add counter for homepage visits
     }
 }
 
-function add_custom_inline_styles($ihc_sql_color) {
+function ihc_styles_generator($ihc_sql_color) {
+    $elementor_check = ihc_elementor_check();
+    if ( $elementor_check ) {
+        echo "<style type='text/css'>
+            #first-btn .elementor-button {
+                background-color: " . $ihc_sql_color . " !important;
+            }
+        </style>";
+    } else {
+        echo "<style type='text/css'>
+            #firstbtn .wp-block-button a {
+                background-color: " . $ihc_sql_color . " !important;
+            }
+        </style>";
 
-    echo "<style type='text/css'>
-        #first-btn {
-            background-color: " . $ihc_sql_color . " !important;
-        }
-    </style>";
+    }
+
 }
 
 add_action('template_redirect', 'ihc_main_procees');
