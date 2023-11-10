@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user_state = sanitize_text_field($_POST["city_state"]);
     $user_option = "B";
     $user_color = sanitize_text_field($_POST["color"]);
+    $btn_id = sanitize_text_field($_POST["btnid"]);
 
     $existing_data = $wpdb->get_results("SELECT * FROM $table_name");
 
@@ -25,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 'user_state' => $user_state,
                 'user_option' => $user_option,
                 'user_color' => $user_color,
+                'btn_id' => $btn_id,
                 'submission_date' => current_time('mysql', 1)
             )
         );
@@ -37,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 'user_state' => "user state A",
                 'user_option' => "A",
                 'user_color' => "color A",
+                'btn_id' => "btn ID A",
                 'submission_date' => current_time('mysql', 1)
             )
         );

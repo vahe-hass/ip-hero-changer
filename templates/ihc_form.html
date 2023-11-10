@@ -27,6 +27,10 @@
                     <h3>Button HEX</h3>
                     <input type="text" id="btn-color" name="color" pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" title="Enter a valid hex color code (e.g., #RRGGBB)" required>
                 </div>
+                <div class="col-sm-6">
+                    <h3>Button ID</h3>
+                    <input type="text" id="btn-id" name="btnid" required>
+                </div>
                 <div class="col-sm-12 ihc-form-btn">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
@@ -48,6 +52,7 @@
                 country: $("#country").val(),
                 city_state: $("#city-state").val(),
                 color: $("#btn-color").val(),
+                btnid: $("#btn-id").val(),
             };
             $.ajax({
                 type: "POST",

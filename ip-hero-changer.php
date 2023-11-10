@@ -27,6 +27,7 @@
             user_state varchar(255),
             user_option varchar(1) NOT NULL,
             user_color varchar(7) NOT NULL,
+            btn_id varchar(255),
             submission_date datetime NOT NULL,
             user_viewed INT DEFAULT 0,
             conversion_rate INT DEFAULT 0,
@@ -136,7 +137,7 @@ function ihc_main_procees() {
         // Your code to execute on the homepage for every session
         // This code runs ok
         // $ihc_sql = ihc_proceess_db_query();
-        $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b");
+        $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b", "#first-btn");
 
 
     }
@@ -172,8 +173,9 @@ function ihc_main_procees() {
 
         if (!empty($commonValues)) {
             $ihc_sql_color = $ihc_sql[2];
-            add_action('wp_head', function () use ($ihc_sql_color) {
-                ihc_styles_generator($ihc_sql_color);
+            $ihc_sql_btn_id = $ihc_sql[3];
+            add_action('wp_head', function () use ($ihc_sql_color, $ihc_sql_btn_id) {
+                ihc_styles_generator($ihc_sql_color, $ihc_sql_btn_id);
             });
 
         } else {
@@ -185,17 +187,17 @@ function ihc_main_procees() {
     }
 }
 
-function ihc_styles_generator($ihc_sql_color) {
+function ihc_styles_generator($ihc_sql_color, $ihc_sql_btn_id) {
     $elementor_check = ihc_elementor_check();
     if ( $elementor_check ) {
-        echo "<style type='text/css'>
-            #first-btn .elementor-button {
+        echo "<style type='text/css'>" .
+            $ihc_sql_btn_id . " .elementor-button {
                 background-color: " . $ihc_sql_color . " !important;
             }
         </style>";
     } else {
-        echo "<style type='text/css'>
-            #firstbtn .wp-block-button a {
+        echo "<style type='text/css'>" .
+            $ihc_sql_btn_id .  " .wp-block-button a {
                 background-color: " . $ihc_sql_color . " !important;
             }
         </style>";
