@@ -30,7 +30,7 @@
             btn_id varchar(255),
             submission_date datetime NOT NULL,
             user_viewed INT DEFAULT 0,
-            conversion_rate INT DEFAULT 0,
+            user_clicked INT DEFAULT 0,
             engagement_metrics INT DEFAULT 0,
             PRIMARY KEY (id)
         ) $charset_collate;";
@@ -52,6 +52,20 @@ function delete_ip_hero_changer_table() {
 
 register_uninstall_hook(__FILE__, 'delete_ip_hero_changer_table');
 
+function enqueue_ihc_frontend_script() {
+    if (is_front_page()) {
+        wp_enqueue_script(
+            'ihc-frontend-script',
+            plugins_url('/assets/ihc-frontend.js', __FILE__),
+            array('jquery'),
+            '1.0',
+            true
+        );
+    }
+}
+
+add_action('wp_enqueue_scripts', 'enqueue_ihc_frontend_script');
+
 // gets visitors IP address using the server
 function ihc_get_visitor_ip() {
     if (isset($_SERVER['HTTP_CLIENT_IP'])) {
@@ -65,7 +79,7 @@ function ihc_get_visitor_ip() {
 
 // Add an admin menu admin page
 function ihc_admin_page() {
-    $form_template_path = plugin_dir_path(__FILE__) . 'templates/ihc_form.html';
+    $form_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-form.html';
         if (file_exists($form_template_path)) {
             include($form_template_path);
         } else {
@@ -130,6 +144,41 @@ function ihc_elementor_check() {
     }
 };
 
+function ihc_user_viewed_counter_b() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'ip_hero_changer';
+    $user_id = 1;
+    $data = array('user_viewed' => $wpdb->prepare('%d', 1));
+    $where = array('id' => $user_id);
+
+    $sql = sprintf("UPDATE %s SET user_viewed = user_viewed + %d WHERE id = %d", $table_name, $data['user_viewed'], $user_id);
+    $wpdb->query($sql);
+
+    if ($wpdb->last_error) {
+        error_log('IHC Error: Failed to increment user_viewed B by +1 in the database.');
+    } else {
+        // Write a loging function for the plugin logs;
+    }
+
+};
+
+function ihc_user_viewed_counter_a() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'ip_hero_changer';
+    $user_id = 2;
+    $data = array('user_viewed' => $wpdb->prepare('%d', 1));
+    $where = array('id' => $user_id);
+
+    $sql = sprintf("UPDATE %s SET user_viewed = user_viewed + %d WHERE id = %d", $table_name, $data['user_viewed'], $user_id);
+    $wpdb->query($sql);
+
+    if ($wpdb->last_error) {
+        error_log('IHC Error: Failed to increment user_viewed A by +1 in the database.');
+    } else {
+        // Write a loging function for the plugin logs;
+    }
+
+};
 
 function ihc_main_procees() {
     // Check if it's the homepage
@@ -177,24 +226,34 @@ function ihc_main_procees() {
             add_action('wp_head', function () use ($ihc_sql_color, $ihc_sql_btn_id) {
                 ihc_styles_generator($ihc_sql_color, $ihc_sql_btn_id);
             });
+            ihc_user_viewed_counter_b();
 
         } else {
             echo "There are !!NO!! common values in your array.";
+            ihc_user_viewed_counter_a();
         }
 
         $_SESSION['visited_homepage'] = true;
-        // Add counter for homepage visits
     }
 }
 
 function ihc_styles_generator($ihc_sql_color, $ihc_sql_btn_id) {
     $elementor_check = ihc_elementor_check();
+    $cleaned_btn_id = str_replace('#', '', $ihc_sql_btn_id);
     if ( $elementor_check ) {
         echo "<style type='text/css'>" .
             $ihc_sql_btn_id . " .elementor-button {
                 background-color: " . $ihc_sql_color . " !important;
             }
         </style>";
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                var ihcfirstBtn = document.getElementById('$cleaned_btn_id');
+                if (ihcfirstBtn) {
+                    ihcfirstBtn.classList.add('ihc-changed-to-b');
+                }
+            });
+            </script>";
     } else {
         echo "<style type='text/css'>" .
             $ihc_sql_btn_id .  " .wp-block-button a {
