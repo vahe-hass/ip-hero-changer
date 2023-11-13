@@ -6,13 +6,13 @@
  * Author: Vahe Grikorihassratian
  */
 
- // Exit if accessed directly.
- if ( ! defined( 'ABSPATH' ) ) {
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
  	exit;
- }
+}
 
  //function to create the database table during plugin activation
- function ip_hero_changer_table() {
+function ip_hero_changer_table() {
      global $wpdb;
      $table_name = $wpdb->prefix . 'ip_hero_changer';
 
@@ -38,11 +38,24 @@
          require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
          dbDelta($sql);
      }
- }
+}
 
- register_activation_hook(__FILE__, 'ip_hero_changer_table');
+function ihc_create_log_file() {
+    $log_file_path = WP_CONTENT_DIR . '/plugins/ip-hero-changer/ihc-error-log.txt';
 
- // delete the database table during plugin uninstallation
+    if (!file_exists($log_file_path)) {
+        file_put_contents($log_file_path, '');
+    }
+}
+
+function ihc_activate() {
+    ip_hero_changer_table();
+    ihc_create_log_file();
+}
+
+register_activation_hook(__FILE__, 'ihc_activate');
+
+// delete the database table during plugin uninstallation
 function delete_ip_hero_changer_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'ip_hero_changer';
@@ -50,8 +63,39 @@ function delete_ip_hero_changer_table() {
     $wpdb->query($sql);
 }
 
-register_uninstall_hook(__FILE__, 'delete_ip_hero_changer_table');
+// Function to delete the log file
+function ihc_delete_log_file() {
+    $log_file_path = WP_CONTENT_DIR . '/plugins/ip-hero-changer/ihc-error-log.txt';
 
+    if (file_exists($log_file_path)) {
+        unlink($log_file_path);
+    }
+}
+
+function ihc_uninstall() {
+    delete_ip_hero_changer_table();
+    ihc_delete_log_file();
+}
+
+register_uninstall_hook(__FILE__, 'ihc_uninstall');
+
+function ihc_log_error($error_message, $ihc_line) {
+    $log_file_path = WP_CONTENT_DIR . '/plugins/ip-hero-changer/ihc-error-log.txt';
+    $line_number = $ihc_line;
+    $log_entry = date('Y-m-d H:i:s') . ' - Line ' . $line_number . ': ' . $error_message . PHP_EOL;
+    file_put_contents($log_file_path, $log_entry, FILE_APPEND);
+};
+
+/**
+ * This is a long comment block.
+ * It serves as a separator or a visual break in the code.
+ * TODAY's date: 2023-10-31
+ */
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 function enqueue_ihc_frontend_script() {
     if (is_front_page()) {
         wp_enqueue_script(
@@ -130,8 +174,8 @@ function ihc_proceess_db_query() {
         return array($user_country, $user_state, $user_option, $user_color);
 
     } else {
-        // !add error loging here!!!!!!!!!!!!!!!!!!!
-        echo "No results found";
+        $ihc_line = __LINE__ - 15;
+        ihc_log_error('The sql query for ihc_proceess_db_query function returned an empty array', $ihc_line);
         return array();
     }
 
@@ -185,8 +229,8 @@ function ihc_main_procees() {
     if (is_home() || is_front_page()) {
         // Your code to execute on the homepage for every session
         // This code runs ok
-        // $ihc_sql = ihc_proceess_db_query();
-        $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b", "#first-btn");
+        $ihc_sql = ihc_proceess_db_query();
+        // $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b", "#first-btn");
 
 
     }
@@ -217,27 +261,36 @@ function ihc_main_procees() {
         // Note! a good function to compute the intersection of !!strings!!
 
         $ipapi_respoonse_array = array("Afghanistan", "Kabul");
+        // $ipapi_respoonse_array = array("Iran", "Tehran");
 
         $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);
 
         if (!empty($commonValues)) {
-            $ihc_sql_color = $ihc_sql[2];
-            $ihc_sql_btn_id = $ihc_sql[3];
-            add_action('wp_head', function () use ($ihc_sql_color, $ihc_sql_btn_id) {
-                ihc_styles_generator($ihc_sql_color, $ihc_sql_btn_id);
-            });
-            ihc_user_viewed_counter_b();
+            if (!empty($ihc_sql) && count($ihc_sql) >= 4) {
+                $ihc_sql_color = $ihc_sql[2];
+                $ihc_sql_btn_id = $ihc_sql[3];
+                add_action('wp_head', function () use ($ihc_sql_color, $ihc_sql_btn_id) {
+                    ihc_styles_generator_b($ihc_sql_color, $ihc_sql_btn_id);
+                });
+                ihc_user_viewed_counter_b();
+            }
 
         } else {
             echo "There are !!NO!! common values in your array.";
-            ihc_user_viewed_counter_a();
+            if (!empty($ihc_sql) && count($ihc_sql) >= 4) {
+                $ihc_sql_btn_id = $ihc_sql[3];
+                add_action('wp_head', function () use ($ihc_sql_btn_id) {
+                    ihc_styles_generator_a($ihc_sql_btn_id);
+                });
+                ihc_user_viewed_counter_a();
+            }
         }
 
         $_SESSION['visited_homepage'] = true;
     }
 }
 
-function ihc_styles_generator($ihc_sql_color, $ihc_sql_btn_id) {
+function ihc_styles_generator_b($ihc_sql_color, $ihc_sql_btn_id) {
     $elementor_check = ihc_elementor_check();
     $cleaned_btn_id = str_replace('#', '', $ihc_sql_btn_id);
     if ( $elementor_check ) {
@@ -260,9 +313,99 @@ function ihc_styles_generator($ihc_sql_color, $ihc_sql_btn_id) {
                 background-color: " . $ihc_sql_color . " !important;
             }
         </style>";
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                var ihcfirstBtn = document.getElementById('$cleaned_btn_id');
+                if (ihcfirstBtn) {
+                    ihcfirstBtn.classList.add('ihc-changed-to-b');
+                }
+            });
+            </script>";
 
     }
 
+}
+
+function ihc_styles_generator_a($ihc_sql_btn_id) {
+    $elementor_check = ihc_elementor_check();
+    $cleaned_btn_id = str_replace('#', '', $ihc_sql_btn_id);
+    if ( $elementor_check ) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var ihcfirstBtnA = document.getElementById('$cleaned_btn_id');
+                if (ihcfirstBtnA !== null) {
+                    var anchorElementA = ihcfirstBtnA.querySelector('a');
+
+                    anchorElementA.addEventListener('click', function() {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/wp-content/plugins/ip-hero-changer/counter-process-a.php', true);
+
+                        // Set the appropriate headers for a form POST request
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                        xhr.onload = function() {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                // Request was successful, handle the response if needed
+                                var response = xhr.responseText;
+                                console.log(response);
+                            } else {
+                                // Request failed
+                                console.error('AJAX error: ' + xhr.status, xhr.statusText);
+                            }
+                        };
+
+                        // Handle network errors
+                        xhr.onerror = function() {
+                            console.error('Network error occurred');
+                        };
+
+                        // Send the request (you may need to adjust the data parameter based on your needs)
+                        xhr.send();
+                    });
+                } else {
+                    console.log('IHC button ID is not set');
+                }
+            });
+        </script>";
+    } else {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var ihcfirstBtnA = document.getElementById('$cleaned_btn_id');
+                if (ihcfirstBtnA !== null) {
+                    var anchorElementA = ihcfirstBtnA.querySelector('a');
+
+                    anchorElementA.addEventListener('click', function() {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/wp-content/plugins/ip-hero-changer/counter-process-a.php', true);
+
+                        // Set the appropriate headers for a form POST request
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                        xhr.onload = function() {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                // Request was successful, handle the response if needed
+                                var response = xhr.responseText;
+                                console.log(response);
+                            } else {
+                                // Request failed
+                                console.error('AJAX error: ' + xhr.status, xhr.statusText);
+                            }
+                        };
+
+                        // Handle network errors
+                        xhr.onerror = function() {
+                            console.error('Network error occurred');
+                        };
+
+                        // Send the request (you may need to adjust the data parameter based on your needs)
+                        xhr.send();
+                    });
+                } else {
+                    console.log('IHC button ID is not set');
+                }
+            });
+        </script>";
+    }
 }
 
 add_action('template_redirect', 'ihc_main_procees');
