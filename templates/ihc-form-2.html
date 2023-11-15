@@ -34,7 +34,11 @@
                 <div class="col-sm-12 ihc-form-btn">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
+                <div class="col-sm-12 ihc-form-btn">
+                    <button type="submit" id="ihc-delete-btn" class="btn btn-primary">Delete Data</button>
+                </div>
                 <div id="response-message" class="col-sm-12 ihc-response"></div>
+                <div id="delete-response" class="col-sm-12 delete-ihc-response"></div>
             </form>
         </div>
     </div>
@@ -71,6 +75,34 @@
                     $("#response-message").html("An error occurred while processing your request.");
                 }
             });
+        });
+    });
+
+    $(document).ready(function() {
+        // Event listener for the delete button
+        $('#ihc-delete-btn').on('click', function() {
+            // Ask for confirmation before deleting
+            if (confirm('Are you sure you want to delete all the data?')) {
+                // Make an AJAX request to delete all data
+                $.ajax({
+                    url: '/wp-content/plugins/ip-hero-changer/ihc-ajax.php', // Replace with the actual path to your PHP file
+                    method: 'POST',
+                    data: { action: 'delete_all_data' },
+                    success: function(response) {
+                        // Handle the response from the server
+                        alert(response);
+                        // You can perform additional actions or update the UI here
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors
+                        console.error('AJAX error: ' + status, error);
+                        alert('Error deleting data.');
+                    }
+                });
+            } else {
+                // User canceled the deletion
+                alert('Data deletion canceled.');
+            }
         });
     });
 </script>

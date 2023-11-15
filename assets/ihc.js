@@ -338,12 +338,15 @@ city_states['Venezuela'] =
 function setRegions() {
     for (region in countries)
         document.write('<option value="' + region + '">' + region + '</option>');
-}
+};
 
 function set_country(oRegionSel, oCountrySel, oCity_StateSel) {
     var countryArr;
     oCountrySel.length = 0;
     oCity_StateSel.length = 0;
+    console.log(oRegionSel);
+    console.log(oRegionSel.selectedIndex);
+    console.log(oRegionSel.options);
     var region = oRegionSel.options[oRegionSel.selectedIndex].text;
     if (countries[region]) {
         oCountrySel.disabled = false;
@@ -353,7 +356,7 @@ function set_country(oRegionSel, oCountrySel, oCity_StateSel) {
         for (var i = 0; i < countryArr.length; i++)
             oCountrySel.options[i + 1] = new Option(countryArr[i], countryArr[i]);
     } else oCountrySel.disabled = true;
-}
+};
 
 function set_city_state(oCountrySel, oCity_StateSel) {
     var city_stateArr;
@@ -366,4 +369,4 @@ function set_city_state(oCountrySel, oCity_StateSel) {
         for (var i = 0; i < city_stateArr.length; i++)
             oCity_StateSel.options[i + 1] = new Option(city_stateArr[i], city_stateArr[i]);
     } else oCity_StateSel.disabled = true;
-}
+};

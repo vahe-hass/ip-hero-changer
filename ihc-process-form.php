@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             echo "Selected options saved successfully.";
         }
     } else {
-        echo "Upgrade to the pro version to save multiple locations.";
+        echo "Clear existing data before configuring new options.";
     }
 } else {
     http_response_code(405);

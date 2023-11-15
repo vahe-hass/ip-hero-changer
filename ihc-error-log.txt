@@ -1,0 +1,2 @@
+2023-11-13 10:20:55 - Line 162: The sql query for ihc_proceess_db_query function returned an empty array
+2023-11-13 10:35:31 - Line 162: The sql query for ihc_proceess_db_query function returned an empty array
