@@ -2,3 +2,16 @@
 	max-width: none !important;
 	padding: 0 !important;
 }
+
+.ihc-canvas {
+    max-height: 425px;
+    width: 100%;
+}
+
+.ctr-a {
+	background-color: #1CC88A !important;
+}
+
+.ctr-b {
+	background-color: #4E73DF !important;
+}

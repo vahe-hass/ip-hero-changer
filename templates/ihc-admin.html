@@ -4,9 +4,10 @@
             <div class="container-fluid">
                 <div class="row" id="ihc-first-row">
                     <div class="col">
-                        <div class="card ihc-custom-card shadow mb-5">
+                        <div class="card ihc-custom-card shadow mb-3">
                             <div class="card-header py-3">
                                 <h2 class="text-primary mb-4" style="font-weight: bold;">IP Hero Changer</h2>
+                                <p class="text-primary fw-bold text-danger"><?php echo $empty_database ?></p>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -15,8 +16,8 @@
                                             <div class="card-header d-flex justify-content-between align-items-center py-3">
                                                 <h6 class="text-primary fw-bold m-0">Button Impression</h6>
                                             </div>
-                                            <div class="card-body">
-                                                <div><canvas id="btnImpBar" width="100" height="100"></canvas></div>
+                                            <div class="card-body ihc-card-body">
+                                                <div><canvas id="btnImpBar" class="ihc-canvas" width="100" height="100"></canvas></div>
                                             </div>
                                         </div>
                                     </div>
@@ -26,7 +27,7 @@
                                                 <h6 class="text-primary fw-bold m-0">Button Clicks</h6>
                                             </div>
                                             <div class="card-body">
-                                                <div><canvas id="viewPie" width="100" height="100"></canvas></div>
+                                                <div><canvas id="viewPie" class="ihc-canvas" width="100" height="100"></canvas></div>
                                             </div>
                                         </div>
                                     </div>
@@ -39,7 +40,10 @@
                     <div class="col-lg-4">
                         <div class="card ihc-custom-card mb-3">
                             <div class="card-body shadow">
-                                <div class="mb-3"><button id="ihc-delete-btn" class="btn btn-danger" type="button">Delete All Data</button></div>
+                                <div>
+                                    <button id="ihc-delete-btn" class="btn btn-danger mb-3" type="button">Delete All Data</button>
+                                    <p class="text-primary text-secondary">Deleting all data will result in the loss of all information. Please ensure you take a backup before proceeding with the deletion.</p>
+                                </div>
                             </div>
                         </div>
                         <div class="card ihc-custom-card shadow mb-4">
@@ -47,25 +51,15 @@
                                 <h6 class="text-primary fw-bold m-0"><strong>Data Findings</strong></h6>
                             </div>
                             <div class="card-body">
-                                <h4 class="small fw-bold">CTR A<span class="float-end">20%</span></h4>
+                                <h4 class="small fw-bold">CTR A<span class="float-end"><?php echo $ctrA ?>%</span></h4>
                                 <div class="progress progress-sm mb-3">
-                                    <div class="progress-bar bg-danger" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%;"><span class="visually-hidden">40%</span></div>
+                                    <div class="progress-bar ctr-a" aria-valuenow="<?php echo $ctrA ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ctrA . '%'?>;">
+                                    </div>
                                 </div>
-                                <h4 class="small fw-bold">CTR B<span class="float-end">20%</span></h4>
+                                <h4 class="small fw-bold">CTR B<span class="float-end"><?php echo $ctrB ?>%</span></h4>
                                 <div class="progress progress-sm mb-3">
-                                    <div class="progress-bar bg-warning" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%;"><span class="visually-hidden">40%</span></div>
-                                </div>
-                                <h4 class="small fw-bold">Customer Database<span class="float-end">60%</span></h4>
-                                <div class="progress progress-sm mb-3">
-                                    <div class="progress-bar bg-primary" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"><span class="visually-hidden">60%</span></div>
-                                </div>
-                                <h4 class="small fw-bold">Payout Details<span class="float-end">80%</span></h4>
-                                <div class="progress progress-sm mb-3">
-                                    <div class="progress-bar bg-info" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%;"><span class="visually-hidden">80%</span></div>
-                                </div>
-                                <h4 class="small fw-bold">Account setup<span class="float-end">Complete!</span></h4>
-                                <div class="progress progress-sm mb-3">
-                                    <div class="progress-bar bg-success" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"><span class="visually-hidden">100%</span></div>
+                                    <div class="progress-bar ctr-b" aria-valuenow="<?php echo $ctrB ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ctrB . '%'?>;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -102,12 +96,14 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <div class="mb-3"><label class="form-label" for="last_name"><strong>Button HEX</strong></label><input class="form-control" type="text" id="btn-color" name="color"
-                                                    pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" placeholder="Enter a valid hex color (e.g., #RRGGBB)"></div>
+                                                    pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" placeholder="Enter a valid hex color (e.g., #RRGGBB)" required>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 col-md-6">
-                                            <div class="mb-3"><label class="form-label" for="first_name"><strong>Button ID</strong><br></label><input class="form-control" type="text" id="btn-id" name="btnid" required></div>
+                                            <div class="mb-3"><label class="form-label" for="first_name"><strong>Button ID</strong><br></label><input class="form-control" type="text" id="btn-id" name="btnid" pattern="^#.*$"
+                                                    placeholder="Selector ID (e.g., #first-btn)" required></div>
                                         </div>
                                         <div class="col"></div>
                                     </div>
@@ -120,6 +116,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div>
+                <a class="border rounded d-inline scroll-to-top" href="#content"><i class="fas fa-angle-up"></i></a>
             </div>
         </div>
     </div>
@@ -160,21 +159,17 @@
     });
 
     $(document).ready(function() {
-        // Event listener for the delete button
         $('#ihc-delete-btn').on('click', function() {
-            // Ask for confirmation before deleting
             if (confirm('Are you sure you want to delete all the data?')) {
-                // Make an AJAX request to delete all data
                 $.ajax({
-                    url: '/wp-content/plugins/ip-hero-changer/ihc-ajax.php', // Replace with the actual path to your PHP file
+                    url: '/wp-content/plugins/ip-hero-changer/ihc-ajax.php',
                     method: 'POST',
                     data: {
                         action: 'delete_all_data'
                     },
                     success: function(response) {
-                        // Handle the response from the server
                         alert(response);
-                        // You can perform additional actions or update the UI here
+                        location.reload();
                     },
                     error: function(xhr, status, error) {
                         // Handle errors
@@ -199,12 +194,12 @@
                 ', ' . $impressionB; ?>
             ],
             backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
+                'rgba(28, 200, 138, 0.5)',
+                'rgba(78, 115, 223, 0.5)',
             ],
             borderColor: [
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
+                'rgb(28, 200, 138)',
+                'rgb(78, 115, 223)',
             ],
             borderWidth: 1
         }]
@@ -214,6 +209,11 @@
         type: 'bar',
         data: data,
         options: {
+            plugins: {
+                legend: {
+                  display: false
+                }
+             },
             scales: {
                 y: {
                     beginAtZero: true
@@ -234,9 +234,14 @@
                 data: [ <?php echo $clickedA .
                     ', ' . $clickedB; ?>
                 ],
-                borderWidth: 1
+                backgroundColor: [
+                    'rgba(28, 200, 138, 1)',
+                    'rgba(78, 115, 223, 1)',
+                ],
+                borderWidth: 2
             }]
         },
+
         options: {
 
         }

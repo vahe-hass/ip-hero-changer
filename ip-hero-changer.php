@@ -128,21 +128,68 @@ function ihc_get_column_value($id, $column_name) {
     return $result;
 }
 
+function ihc_db_row_query($row_id) {
+    global $wpdb;
+
+    // Define your custom SQL query
+    $sql = "SELECT * FROM {$wpdb->prefix}ip_hero_changer WHERE id = $row_id";
+
+    $results = $wpdb->get_results($sql);
+
+    if (!empty($results)) {
+        foreach ($results as $row) {
+            $user_country = $row->user_country;
+            $user_state = $row->user_state;
+            $user_option = $row->user_option;
+            $user_color = $row->user_color;
+            $button_id = $row->btn_id;
+            $user_viewed = $row->user_viewed;
+            $user_clicked = $row->user_clicked;
+        }
+
+        return array($user_country, $user_state, $user_option, $user_color, $button_id, $user_viewed, $user_clicked);   } else {
+        $ihc_line = __LINE__ - 15;
+        ihc_log_error('The sql query for ihc_proceess_db_query function returned an empty array', $ihc_line);
+        return array();
+    }
+
+};
+
 // Add an admin menu admin page
 function ihc_admin_page() {
     $form_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-admin.html';
-    global $wpdb;
-    $impressionB = ihc_get_column_value(1, 'user_viewed');
-    $clickedB = ihc_get_column_value(1, 'user_clicked');
-    $impressionA = ihc_get_column_value(2, 'user_viewed');
-    $clickedA = ihc_get_column_value(2, 'user_clicked');
 
-        if (file_exists($form_template_path)) {
-            include($form_template_path);
-        } else {
-            // log error in this part
-            echo 'IHC Form template not found.';
-        }
+
+    $option_b_row = ihc_db_row_query(1);
+    $option_a_row = ihc_db_row_query(2);
+
+    if (empty($option_b_row)) {
+        $empty_database = "Don't forget to save your configuration so that the IP Hero Changer plugin can begin its tasks.";
+        $ctrB = '';
+        $ctrA = '';
+        $impressionB = 0;
+        $clickedB = 0;
+        $impressionA = 0;
+        $clickedA = 0;
+    } else {
+        $empty_database = "";
+        $impressionB = intval($option_b_row[5]);
+        $clickedB = intval($option_b_row[6]);
+        $impressionA = intval($option_a_row[5]);
+        $clickedA = intval($option_a_row[6]);
+        $ctrB_condition = ($impressionB !== 0) ? $clickedB / $impressionB : 0;
+        $ctrA_condition =($impressionA !== 0) ? $clickedA / $impressionA : 0;
+        $ctrB = round($ctrB_condition * 100, 1);
+        $ctrA = round($ctrA_condition * 100, 1);
+    }
+
+
+    if (file_exists($form_template_path)) {
+        include($form_template_path);
+    } else {
+        // log error in this part
+        echo 'IHC Form template not found.';
+    }
 }
 
 function ihc_add_admin_menu() {
@@ -156,6 +203,8 @@ function enqueue_ihc_resources() {
     if (isset($_GET['page']) && $_GET['page'] === 'ip-hero-changer-admin') {
 
         wp_enqueue_style('bootstrap-head', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css');
+        wp_enqueue_style('fontawesome-head', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
+        wp_enqueue_style('ihc-fonts', 'https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i');
         wp_enqueue_style('ihc-plugin', plugins_url( 'ip-hero-changer/assets/ihc.css'));
         wp_enqueue_style('ihc-plugin-bootstrap', plugins_url( 'ip-hero-changer/assets/bootstrap.min.css'));
 
@@ -166,32 +215,6 @@ function enqueue_ihc_resources() {
 }
 
 add_action('admin_enqueue_scripts', 'enqueue_ihc_resources');
-
-
-function ihc_proceess_db_query() {
-    global $wpdb;
-
-    // Define your custom SQL query
-    $sql = "SELECT * FROM {$wpdb->prefix}ip_hero_changer WHERE user_option = 'B'";
-
-    $results = $wpdb->get_results($sql);
-
-    if (!empty($results)) {
-        foreach ($results as $row) {
-            $user_country = $row->user_country;
-            $user_state = $row->user_state;
-            $user_option = $row->user_option;
-            $user_color = $row->user_color;
-            $button_id = $row->btn_id;
-        }
-
-        return array($user_country, $user_state, $user_option, $user_color, $button_id);    } else {
-        $ihc_line = __LINE__ - 15;
-        ihc_log_error('The sql query for ihc_proceess_db_query function returned an empty array', $ihc_line);
-        return array();
-    }
-
-};
 
 function ihc_elementor_check() {
     $elementor_page = get_post_meta( get_the_ID(), '_elementor_edit_mode', true );
@@ -241,7 +264,7 @@ function ihc_main_procees() {
     if (is_home() || is_front_page()) {
         // Your code to execute on the homepage for every session
         // This code runs ok
-        $ihc_sql = ihc_proceess_db_query();
+        $ihc_sql = ihc_db_row_query(1);
         // $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b", "#first-btn");
 
 
