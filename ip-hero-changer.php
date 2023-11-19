@@ -267,7 +267,9 @@ function ihc_main_procees() {
         $ihc_sql = ihc_db_row_query(1);
         // $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b", "#first-btn");
 
-
+        if (empty($ihc_sql)) {
+            return;
+        }
     }
 
     if (session_status() == PHP_SESSION_NONE) {
@@ -295,30 +297,26 @@ function ihc_main_procees() {
         // $ipapi_respoonse_array = array($country_name, $state);
         // Note! a good function to compute the intersection of !!strings!!
 
-        $ipapi_respoonse_array = array("Germany", "Hamburg");
+        $ipapi_respoonse_array = array("Algeria");
         // $ipapi_respoonse_array = array("Iran", "Tehran");
 
         $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);
 
         if (!empty($commonValues)) {
-            if (!empty($ihc_sql) && count($ihc_sql) >= 4) {
-                $ihc_sql_color = $ihc_sql[3];
-                $ihc_sql_btn_id = $ihc_sql[4];
-                add_action('wp_head', function () use ($ihc_sql_color, $ihc_sql_btn_id) {
-                    ihc_styles_generator_b($ihc_sql_color, $ihc_sql_btn_id);
-                });
-                ihc_user_viewed_counter_b();
-            }
+            $ihc_sql_color = $ihc_sql[3];
+            $ihc_sql_btn_id = $ihc_sql[4];
+            add_action('wp_head', function () use ($ihc_sql_color, $ihc_sql_btn_id) {
+                ihc_styles_generator_b($ihc_sql_color, $ihc_sql_btn_id);
+            });
+            ihc_user_viewed_counter_b();
 
         } else {
             echo "There are !!NO!! common values in your array.";
-            if (!empty($ihc_sql) && count($ihc_sql) >= 4) {
-                $ihc_sql_btn_id = $ihc_sql[4];
-                add_action('wp_head', function () use ($ihc_sql_btn_id) {
-                    ihc_styles_generator_a($ihc_sql_btn_id);
-                });
-                ihc_user_viewed_counter_a();
-            }
+            $ihc_sql_btn_id = $ihc_sql[4];
+            add_action('wp_head', function () use ($ihc_sql_btn_id) {
+                ihc_styles_generator_a($ihc_sql_btn_id);
+            });
+            ihc_user_viewed_counter_a();
         }
 
         $_SESSION['visited_homepage'] = true;

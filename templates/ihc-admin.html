@@ -102,7 +102,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-12 col-md-6">
-                                            <div class="mb-3"><label class="form-label" for="first_name"><strong>Button ID</strong><br></label><input class="form-control" type="text" id="btn-id" name="btnid" pattern="^#.*$"
+                                            <div class="mb-3"><label class="form-label" for="first_name"><strong>Button ID</strong><br></label><input class="form-control" type="text" id="btn-id" name="btnid" pattern="^#[^0-9!+=][^!+=]*$"
                                                     placeholder="Selector ID (e.g., #first-btn)" required></div>
                                         </div>
                                         <div class="col"></div>
@@ -131,6 +131,10 @@
         $("#location-form").submit(function(event) {
             event.preventDefault();
 
+            if (!ihc_validateForm()) {
+                return;
+            }
+
             var formData = {
                 region: $('#region').val(),
                 country: $("#country").val(),
@@ -157,6 +161,19 @@
             });
         });
     });
+
+    function ihc_validateForm() {
+        var region = $('#region').val();
+        var country = $("#country").val();
+        var cityState = $("#city-state").val();
+
+        if (region === "" || country === "" || cityState === "") {
+            alert('Please select a value for Region, Country, and State before submitting.');
+            return false;
+        }
+
+        return true;
+    };
 
     $(document).ready(function() {
         $('#ihc-delete-btn').on('click', function() {
