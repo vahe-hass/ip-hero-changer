@@ -114,12 +114,8 @@ function ihc_get_visitor_ip() {
 function ihc_get_column_value($id, $column_name) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'ip_hero_changer';
-
-    // Sanitize input to prevent SQL injection
     $id = intval($id);
     $column_name = esc_sql($column_name);
-
-    // Query the database
     $result = $wpdb->get_var($wpdb->prepare(
         "SELECT $column_name FROM $table_name WHERE id = %d",
         $id
@@ -131,9 +127,7 @@ function ihc_get_column_value($id, $column_name) {
 function ihc_db_row_query($row_id) {
     global $wpdb;
 
-    // Define your custom SQL query
     $sql = "SELECT * FROM {$wpdb->prefix}ip_hero_changer WHERE id = $row_id";
-
     $results = $wpdb->get_results($sql);
 
     if (!empty($results)) {
@@ -157,7 +151,7 @@ function ihc_db_row_query($row_id) {
 
 // Add an admin menu admin page
 function ihc_admin_page() {
-    $form_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-admin.html';
+    $admin_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-admin.html';
 
 
     $option_b_row = ihc_db_row_query(1);
@@ -184,23 +178,56 @@ function ihc_admin_page() {
     }
 
 
-    if (file_exists($form_template_path)) {
-        include($form_template_path);
+    if (file_exists($admin_template_path)) {
+        include($admin_template_path);
     } else {
-        // log error in this part
-        echo 'IHC Form template not found.';
+        $ihc_line = __LINE__ - 3;
+        ihc_log_error('IHC admin template not found check the templates folder.', $ihc_line);
     }
 }
 
 function ihc_add_admin_menu() {
-    add_menu_page('IP Hero Changer', 'IP Hero Changer', 'manage_options', 'ip-hero-changer-admin', 'ihc_admin_page');
+    add_menu_page(
+        'IP Hero Changer',
+        'IP Hero Changer',
+        'manage_options',
+        'ip-hero-changer-admin',
+        'ihc_admin_page');
 }
+
 add_action('admin_menu', 'ihc_add_admin_menu');
+
+function ihc_render_documentation_page() {
+    $doc_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-docs.html';
+    $ihc_img1 = plugins_url('assets/images/ihc-elem-docs.jpg', __FILE__);
+
+
+    if (file_exists($doc_template_path)) {
+        include($doc_template_path);
+    } else {
+        $ihc_line = __LINE__ - 3;
+        ihc_log_error('IHC documentation template not found check the templates folder.', $ihc_line);
+    }
+}
+
+function ihc_add_documentation_page() {
+    add_submenu_page(
+        'ip-hero-changer-admin',
+        'Documentation',
+        'Documentation',
+        'manage_options',
+        'ihc-documentation',
+        'ihc_render_documentation_page'
+    );
+}
+
+add_action('admin_menu', 'ihc_add_documentation_page');
+
 
 // Add resources to the plugin admin page header
 function enqueue_ihc_resources() {
 
-    if (isset($_GET['page']) && $_GET['page'] === 'ip-hero-changer-admin') {
+    if (isset($_GET['page']) && ($_GET['page'] === 'ip-hero-changer-admin' || $_GET['page'] === 'ihc-documentation')) {
 
         wp_enqueue_style('bootstrap-head', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css');
         wp_enqueue_style('fontawesome-head', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
@@ -234,9 +261,8 @@ function ihc_user_viewed_counter_b() {
     $wpdb->query($sql);
 
     if ($wpdb->last_error) {
-        error_log('IC Error: Failed to increment user_viewed B by +1 in the database.');
-    } else {
-        // Write a loging function for the plugin logs;
+        $ihc_line = __LINE__ - 3;
+        ihc_log_error('ihc_user_viewed_counter_b function could not increment the user_viewed by 1.', $ihc_line);
     }
 
 };
@@ -252,24 +278,21 @@ function ihc_user_viewed_counter_a() {
     $wpdb->query($sql);
 
     if ($wpdb->last_error) {
-        error_log('IHC Error: Failed to increment user_viewed A by +1 in the database.');
-    } else {
-        // Write a loging function for the plugin logs;
+        $ihc_line = __LINE__ - 3;
+        ihc_log_error('ihc_user_viewed_counter_a function could not increment the user_viewed by 1.', $ihc_line);
     }
 
 };
 
 function ihc_main_procees() {
-    // Check if it's the homepage
-    if (is_home() || is_front_page()) {
-        // Your code to execute on the homepage for every session
-        // This code runs ok
-        $ihc_sql = ihc_db_row_query(1);
-        // $ihc_sql = array("Afghanistan", "Kabul", "#c00b0b", "#first-btn");
 
-        if (empty($ihc_sql)) {
-            return;
-        }
+    if (!is_home() && !is_front_page()) {
+        return;
+    }
+
+    $ihc_sql = ihc_db_row_query(1);
+    if (empty($ihc_sql)) {
+        return;
     }
 
     if (session_status() == PHP_SESSION_NONE) {
@@ -297,7 +320,7 @@ function ihc_main_procees() {
         // $ipapi_respoonse_array = array($country_name, $state);
         // Note! a good function to compute the intersection of !!strings!!
 
-        $ipapi_respoonse_array = array("Algeria");
+        $ipapi_respoonse_array = array("Germany", "Berlin");
         // $ipapi_respoonse_array = array("Iran", "Tehran");
 
         $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);
@@ -311,7 +334,6 @@ function ihc_main_procees() {
             ihc_user_viewed_counter_b();
 
         } else {
-            echo "There are !!NO!! common values in your array.";
             $ihc_sql_btn_id = $ihc_sql[4];
             add_action('wp_head', function () use ($ihc_sql_btn_id) {
                 ihc_styles_generator_a($ihc_sql_btn_id);
