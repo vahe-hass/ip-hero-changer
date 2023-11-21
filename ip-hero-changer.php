@@ -90,7 +90,7 @@ function enqueue_ihc_frontend_script() {
     if (is_front_page()) {
         wp_enqueue_script(
             'ihc-frontend-script',
-            plugins_url('/assets/ihc-frontend.js', __FILE__),
+            plugins_url('/assets/js/ihc-frontend.js', __FILE__),
             array('jquery'),
             '1.0',
             true
@@ -200,6 +200,8 @@ add_action('admin_menu', 'ihc_add_admin_menu');
 function ihc_render_documentation_page() {
     $doc_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-docs.html';
     $ihc_img1 = plugins_url('assets/images/ihc-elem-docs.jpg', __FILE__);
+    $ihc_img2 = plugins_url('assets/images/ihc-wp-docs.jpg', __FILE__);
+    $ihc_img3 = plugins_url('assets/images/ihc-form-docs.jpg', __FILE__);
 
 
     if (file_exists($doc_template_path)) {
@@ -232,10 +234,10 @@ function enqueue_ihc_resources() {
         wp_enqueue_style('bootstrap-head', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css');
         wp_enqueue_style('fontawesome-head', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
         wp_enqueue_style('ihc-fonts', 'https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i');
-        wp_enqueue_style('ihc-plugin', plugins_url( 'ip-hero-changer/assets/ihc.css'));
-        wp_enqueue_style('ihc-plugin-bootstrap', plugins_url( 'ip-hero-changer/assets/bootstrap.min.css'));
+        wp_enqueue_style('ihc-plugin', plugins_url( 'ip-hero-changer/assets/css/ihc.css'));
+        wp_enqueue_style('ihc-plugin-bootstrap', plugins_url( 'ip-hero-changer/assets/css/bootstrap.min.css'));
 
-        wp_enqueue_script('ihc-plugin-city-state', plugins_url( 'ip-hero-changer/assets/ihc.js'));
+        wp_enqueue_script('ihc-plugin-city-state', plugins_url( 'ip-hero-changer/assets/js/ihc.js'));
         wp_enqueue_script('bootstrap-footer', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js', array(), '5.3.2', true);
 
     }
