@@ -292,6 +292,10 @@ function ihc_main_procees() {
         return;
     }
 
+    if (current_user_can( 'edit_posts' )) {
+        return;
+    }
+
     $ihc_sql = ihc_db_row_query(1);
     if (empty($ihc_sql)) {
         return;
@@ -392,31 +396,26 @@ function ihc_styles_generator_a($ihc_sql_btn_id) {
                 var ihcfirstBtnA = document.getElementById('$cleaned_btn_id');
                 if (ihcfirstBtnA !== null) {
                     var anchorElementA = ihcfirstBtnA.querySelector('a');
-
+                    var ajaxSent = false;
                     anchorElementA.addEventListener('click', function() {
+                        if (ajaxSent) {
+                            return;
+                        }
                         var xhr = new XMLHttpRequest();
                         xhr.open('POST', '/wp-content/plugins/ip-hero-changer/counter-process-a.php', true);
-
-                        // Set the appropriate headers for a form POST request
                         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
                         xhr.onload = function() {
                             if (xhr.status >= 200 && xhr.status < 300) {
-                                // Request was successful, handle the response if needed
                                 var response = xhr.responseText;
                                 console.log(response);
+                                ajaxSent = true;
                             } else {
-                                // Request failed
                                 console.error('AJAX error: ' + xhr.status, xhr.statusText);
                             }
                         };
-
-                        // Handle network errors
                         xhr.onerror = function() {
                             console.error('Network error occurred');
                         };
-
-                        // Send the request (you may need to adjust the data parameter based on your needs)
                         xhr.send();
                     });
                 } else {
@@ -430,31 +429,26 @@ function ihc_styles_generator_a($ihc_sql_btn_id) {
                 var ihcfirstBtnA = document.getElementById('$cleaned_btn_id');
                 if (ihcfirstBtnA !== null) {
                     var anchorElementA = ihcfirstBtnA.querySelector('a');
-
+                    var ajaxSent = false;
                     anchorElementA.addEventListener('click', function() {
+                        if (ajaxSent) {
+                            return;
+                        }
                         var xhr = new XMLHttpRequest();
                         xhr.open('POST', '/wp-content/plugins/ip-hero-changer/counter-process-a.php', true);
-
-                        // Set the appropriate headers for a form POST request
                         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
                         xhr.onload = function() {
                             if (xhr.status >= 200 && xhr.status < 300) {
-                                // Request was successful, handle the response if needed
                                 var response = xhr.responseText;
                                 console.log(response);
+                                ajaxSent = true;
                             } else {
-                                // Request failed
                                 console.error('AJAX error: ' + xhr.status, xhr.statusText);
                             }
                         };
-
-                        // Handle network errors
                         xhr.onerror = function() {
                             console.error('Network error occurred');
                         };
-
-                        // Send the request (you may need to adjust the data parameter based on your needs)
                         xhr.send();
                     });
                 } else {
