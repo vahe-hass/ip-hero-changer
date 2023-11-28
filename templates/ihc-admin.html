@@ -42,7 +42,8 @@
                             <div class="card-body shadow">
                                 <div>
                                     <button id="ihc-delete-btn" class="btn btn-danger mb-3" type="button">Delete All Data</button>
-                                    <p class="text-primary text-secondary">Deleting all data will result in the loss of all information. Please ensure you take a backup before proceeding with the deletion.</p>
+                                    <p class="text-danger d-inline px-2">B HEX is <?php echo $optionBhex; ?></p>
+                                    <p class="text-danger">Deleting all data will result in the loss of all information. Please ensure you take a backup before proceeding with the deletion.</p>
                                 </div>
                             </div>
                         </div>
@@ -95,14 +96,14 @@
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6">
-                                            <div class="mb-3"><label class="form-label" for="last_name"><strong>Button HEX</strong></label><input class="form-control" type="text" id="btn-color" name="color"
+                                            <div class="mb-3"><label class="form-label" for="btn-color"><strong>Button HEX</strong></label><input class="form-control" type="text" id="btn-color" name="color"
                                                     pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" placeholder="Enter a valid hex color (e.g., #RRGGBB)" required>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 col-md-6">
-                                            <div class="mb-3"><label class="form-label" for="first_name"><strong>Button ID</strong><br></label><input class="form-control" type="text" id="btn-id" name="btnid" pattern="^#[^0-9!+=][^!+=]*$"
+                                            <div class="mb-3"><label class="form-label" for="btn-id"><strong>Button ID</strong><br></label><input class="form-control" type="text" id="btn-id" name="btnid" pattern="^#[^0-9!+=][^!+=]*$"
                                                     placeholder="Selector ID (e.g., #first-btn)" required></div>
                                         </div>
                                         <div class="col"></div>

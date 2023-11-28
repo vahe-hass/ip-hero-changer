@@ -23,7 +23,7 @@ IP Hero Changer is a WordPress plugin designed for A/B testing the first button 
 
 ## Requirements
 
-- WordPress 5.0 or higher.
+- WordPress 5.2 or higher.
 - Elementor (if used with Elementor-built pages).
 
 ## Frequently Asked Questions

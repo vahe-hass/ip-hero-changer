@@ -1,10 +1,17 @@
 <?php
 /**
  * Plugin Name: IP Hero Changer
- * Description: A WordPress plugin to change the hero section based on IP.
+ * Plugin URI: https://vahegrikorihassratian.com/plugins/ip-hero-changer/
+ * Description: A WordPress plugin to change the hero section button colors based on IP.
  * Version: 1.0.0
+ * Requires at least: 5.2
+ * Requires PHP: 7.4
  * Author: Vahe Grikorihassratian
+ * Author URI: https://vahegrikorihassratian.com/
+ * License: GPL v3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
+
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -159,6 +166,7 @@ function ihc_admin_page() {
 
     if (empty($option_b_row)) {
         $empty_database = "Don't forget to save your configuration so that the IP Hero Changer plugin can begin its tasks.";
+        $optionBhex = 'Not Set';
         $ctrB = '';
         $ctrA = '';
         $impressionB = 0;
@@ -167,6 +175,7 @@ function ihc_admin_page() {
         $clickedA = 0;
     } else {
         $empty_database = "";
+        $optionBhex = $option_b_row[3];
         $impressionB = intval($option_b_row[5]);
         $clickedB = intval($option_b_row[6]);
         $impressionA = intval($option_a_row[5]);
