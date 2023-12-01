@@ -9,9 +9,24 @@
  * Author: Vahe Grikorihassratian
  * Author URI: https://vahegrikorihassratian.com/
  * License: GPL v3
- * License URI: https://www.gnu.org/licenses/gpl-3.0.html
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html/
  */
 
+
+ /*
+ IP Hero Changer is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ any later version.
+
+ IP Hero Changer is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with IP Hero Changer. If not, see https://www.gnu.org/licenses/gpl-3.0.html/
+ */
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -167,6 +182,7 @@ function ihc_admin_page() {
     if (empty($option_b_row)) {
         $empty_database = "Don't forget to save your configuration so that the IP Hero Changer plugin can begin its tasks.";
         $optionBhex = 'Not Set';
+        $optionState = 'Not Set';
         $ctrB = '';
         $ctrA = '';
         $impressionB = 0;
@@ -176,6 +192,7 @@ function ihc_admin_page() {
     } else {
         $empty_database = "";
         $optionBhex = $option_b_row[3];
+        $optionState = $option_b_row[1];
         $impressionB = intval($option_b_row[5]);
         $clickedB = intval($option_b_row[6]);
         $impressionA = intval($option_a_row[5]);
@@ -335,7 +352,8 @@ function ihc_main_procees() {
         // $ipapi_respoonse_array = array($country_name, $state);
         // Note! a good function to compute the intersection of !!strings!!
 
-        $ipapi_respoonse_array = array("Germany", "Berlin");
+        // $ipapi_respoonse_array = array("Germany", "Berlin");
+        $ipapi_respoonse_array = array("Beijing");
         // $ipapi_respoonse_array = array("Iran", "Tehran");
 
         $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);

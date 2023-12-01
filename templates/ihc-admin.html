@@ -42,7 +42,6 @@
                             <div class="card-body shadow">
                                 <div>
                                     <button id="ihc-delete-btn" class="btn btn-danger mb-3" type="button">Delete All Data</button>
-                                    <p class="text-danger d-inline px-2">B HEX is <?php echo $optionBhex; ?></p>
                                     <p class="text-danger">Deleting all data will result in the loss of all information. Please ensure you take a backup before proceeding with the deletion.</p>
                                 </div>
                             </div>
@@ -61,6 +60,22 @@
                                 <div class="progress progress-sm mb-3">
                                     <div class="progress-bar ctr-b" aria-valuenow="<?php echo $ctrB ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $ctrB . '%'?>;">
                                     </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>B HEX</th>
+                                                <th>State</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><?php echo $optionBhex; ?></td>
+                                                <td><?php echo $optionState; ?></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
