@@ -4,8 +4,8 @@
  * Plugin URI: https://vahegrikorihassratian.com/plugins/ip-hero-changer/
  * Description: A WordPress plugin to change the hero section button colors based on IP.
  * Version: 1.0.0
- * Requires at least: 5.2
- * Requires PHP: 7.4
+ * Requires at least: 6.0
+ * Requires PHP: 7.2
  * Author: Vahe Grikorihassratian
  * Author URI: https://vahegrikorihassratian.com/
  * License: GPL v3
@@ -252,7 +252,6 @@ function ihc_add_documentation_page() {
 add_action('admin_menu', 'ihc_add_documentation_page');
 
 
-// Add resources to the plugin admin page header
 function enqueue_ihc_resources() {
 
     if (isset($_GET['page']) && ($_GET['page'] === 'ip-hero-changer-admin' || $_GET['page'] === 'ihc-documentation')) {
@@ -328,34 +327,34 @@ function ihc_main_procees() {
     }
 
     if (session_status() == PHP_SESSION_NONE) {
-        session_start(); // Start the session if it's not already started
+        session_start();
     }
 
     // Check if it's a new session
     if (!isset($_SESSION['visited_homepage'])) {
-        // Your code to execute on the homepage for a new session
-        // This code runs only on the first visit to the homepage in a new session
-        // $session_ip_address = ihc_get_visitor_ip();
-        $session_ip_address = '164.130.107.24';
-        // $response = wp_remote_get("https://ipapi.co/" . $session_ip_address . "/json/");
-        // if (is_array($response) && !is_wp_error($response)) {
-        //     $ipapi_loc = wp_remote_retrieve_body($response);
-        //     $obj = json_decode($ipapi_loc);
-        //     $country_name = $obj->{'country_name'};
-        //     $state = $obj->{'region'};
-        //
-        // } else {
-        //     $error_message = $response->get_error_message();
-        //     error_log("IHC Error: $error_message");
-        // }
-        //
-        // $ipapi_respoonse_array = array($country_name, $state);
-        // Note! a good function to compute the intersection of !!strings!!
+        $session_ip_address = ihc_get_visitor_ip();
+        $response = wp_remote_get("https://ipapi.co/" . $session_ip_address . "/json/");
+        $state = '';
 
-        // $ipapi_respoonse_array = array("Germany", "Berlin");
-        $ipapi_respoonse_array = array("Beijing");
-        // $ipapi_respoonse_array = array("Iran", "Tehran");
+        if (is_array($response) && !is_wp_error($response)) {
+            $body = wp_remote_retrieve_body($response);
+            $obj = json_decode($body);
 
+            if (isset($obj->error) && $obj->error === true && isset($obj->reason) && $obj->reason === 'RateLimited') {
+                $ihc_line = __LINE__ ;
+                ihc_log_error('Ip Hero Changer utilizes ipapi for IP detection, and the free version of ipapi comes with a limit of 30,000 requests per month, with a daily cap of up to 1,000. Unfortunately, it seems you have exceeded these limits.', $ihc_line);
+                // Add exceeded limit option in DB to show in admin page
+            } else {
+                $state = isset($obj->region) ? $obj->region : '';
+
+            }
+        } else {
+            $ipapi_error_message = $response->get_error_message();
+            $ihc_line = __LINE__ ;
+            ihc_log_error($ipapi_error_message, $ihc_line);
+        }
+
+        $ipapi_respoonse_array = array($state);
         $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);
 
         if (!empty($commonValues)) {

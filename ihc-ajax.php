@@ -4,6 +4,9 @@ require_once("../../../wp-load.php");
 
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_all_data') {
     delete_all_data();
+} else {
+    http_response_code(403);
+    echo "Invalid request method.";
 }
 
 // Function to delete all data from the database
