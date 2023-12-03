@@ -46,7 +46,7 @@ function ip_hero_changer_table() {
             id INT NOT NULL AUTO_INCREMENT,
             user_region varchar(255) NOT NULL,
             user_country varchar(255) NOT NULL,
-            user_state varchar(255),
+            user_city varchar(255),
             user_option varchar(1) NOT NULL,
             user_color varchar(7) NOT NULL,
             btn_id varchar(255),
@@ -155,7 +155,7 @@ function ihc_db_row_query($row_id) {
     if (!empty($results)) {
         foreach ($results as $row) {
             $user_country = $row->user_country;
-            $user_state = $row->user_state;
+            $user_city = $row->user_city;
             $user_option = $row->user_option;
             $user_color = $row->user_color;
             $button_id = $row->btn_id;
@@ -163,7 +163,8 @@ function ihc_db_row_query($row_id) {
             $user_clicked = $row->user_clicked;
         }
 
-        return array($user_country, $user_state, $user_option, $user_color, $button_id, $user_viewed, $user_clicked);   } else {
+        $user_city_clean = stripslashes($user_city);
+        return array($user_country, $user_city_clean, $user_option, $user_color, $button_id, $user_viewed, $user_clicked);   } else {
         $ihc_line = __LINE__ - 15;
         ihc_log_error('The sql query for ihc_proceess_db_query function returned an empty array', $ihc_line);
         return array();
@@ -182,7 +183,7 @@ function ihc_admin_page() {
     if (empty($option_b_row)) {
         $empty_database = "Don't forget to save your configuration so that the IP Hero Changer plugin can begin its tasks.";
         $optionBhex = 'Not Set';
-        $optionState = 'Not Set';
+        $optionCity = 'Not Set';
         $ctrB = '';
         $ctrA = '';
         $impressionB = 0;
@@ -192,7 +193,7 @@ function ihc_admin_page() {
     } else {
         $empty_database = "";
         $optionBhex = $option_b_row[3];
-        $optionState = $option_b_row[1];
+        $optionCity = $option_b_row[1];
         $impressionB = intval($option_b_row[5]);
         $clickedB = intval($option_b_row[6]);
         $impressionA = intval($option_a_row[5]);
@@ -334,7 +335,8 @@ function ihc_main_procees() {
     if (!isset($_SESSION['visited_homepage'])) {
         $session_ip_address = ihc_get_visitor_ip();
         $response = wp_remote_get("https://ipapi.co/" . $session_ip_address . "/json/");
-        $state = '';
+        $city = '';
+        $country_name = '';
 
         if (is_array($response) && !is_wp_error($response)) {
             $body = wp_remote_retrieve_body($response);
@@ -345,7 +347,8 @@ function ihc_main_procees() {
                 ihc_log_error('Ip Hero Changer utilizes ipapi for IP detection, and the free version of ipapi comes with a limit of 30,000 requests per month, with a daily cap of up to 1,000. Unfortunately, it seems you have exceeded these limits.', $ihc_line);
                 // Add exceeded limit option in DB to show in admin page
             } else {
-                $state = isset($obj->region) ? $obj->region : '';
+                $city = isset($obj->city) ? $obj->city : '';
+                $country_name = isset($obj->country_name) ? $obj->country_name : '';
 
             }
         } else {
@@ -354,10 +357,10 @@ function ihc_main_procees() {
             ihc_log_error($ipapi_error_message, $ihc_line);
         }
 
-        $ipapi_respoonse_array = array($state);
+        $ipapi_respoonse_array = array($city, $country_name);
         $commonValues = array_intersect($ihc_sql, $ipapi_respoonse_array);
 
-        if (!empty($commonValues)) {
+        if (!empty($commonValues) && count($commonValues) >= 2) {
             $ihc_sql_color = $ihc_sql[3];
             $ihc_sql_btn_id = $ihc_sql[4];
             add_action('wp_head', function () use ($ihc_sql_color, $ihc_sql_btn_id) {

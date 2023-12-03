@@ -66,13 +66,13 @@
                                         <thead>
                                             <tr>
                                                 <th>B HEX</th>
-                                                <th>State</th>
+                                                <th>City</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td><?php echo $optionBhex; ?></td>
-                                                <td><?php echo $optionState; ?></td>
+                                                <td><?php echo $optionCity; ?></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -105,7 +105,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-12 col-md-6">
-                                            <div class="mb-3"><label class="form-label"><strong>State</strong><br></label>
+                                            <div class="mb-3"><label class="form-label"><strong>City</strong><br></label>
                                                 <select class="form-select" id="city-state" name="city_state" disabled required>
                                                 </select>
                                             </div>
@@ -184,7 +184,7 @@
         var cityState = $("#city-state").val();
 
         if (region === "" || country === "" || cityState === "") {
-            alert('Please select a value for Region, Country, and State before submitting.');
+            alert('Please select a value for Region, Country, and City before submitting.');
             return false;
         }
 

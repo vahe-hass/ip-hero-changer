@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $user_region = sanitize_text_field($_POST["region"]);
     $user_country = sanitize_text_field($_POST["country"]);
-    $user_state = sanitize_text_field($_POST["city_state"]);
+    $user_city = sanitize_text_field($_POST["city_state"]);
     $user_option = "B";
     $user_color = sanitize_text_field($_POST["color"]);
     $btn_id = sanitize_text_field($_POST["btnid"]);
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             array(
                 'user_region' => $user_region,
                 'user_country' => $user_country,
-                'user_state' => $user_state,
+                'user_city' => $user_city,
                 'user_option' => $user_option,
                 'user_color' => $user_color,
                 'btn_id' => $btn_id,
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             array(
                 'user_region' => "user region A",
                 'user_country' => "user country A",
-                'user_state' => "user state A",
+                'user_city' => "user city A",
                 'user_option' => "A",
                 'user_color' => "color A",
                 'btn_id' => "btn ID A",

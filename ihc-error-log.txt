@@ -1,1 +1,7 @@
 2023-12-02 10:16:54 - Line 354: cURL error 35: OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to ipapi.co:443 
+2023-12-02 16:52:03 - Line 152: The sql query for ihc_proceess_db_query function returned an empty array
+2023-12-02 16:52:03 - Line 152: The sql query for ihc_proceess_db_query function returned an empty array
+2023-12-03 09:15:28 - Line 152: The sql query for ihc_proceess_db_query function returned an empty array
+2023-12-03 09:15:28 - Line 152: The sql query for ihc_proceess_db_query function returned an empty array
+2023-12-03 12:20:27 - Line 153: The sql query for ihc_proceess_db_query function returned an empty array
+2023-12-03 12:20:27 - Line 153: The sql query for ihc_proceess_db_query function returned an empty array
