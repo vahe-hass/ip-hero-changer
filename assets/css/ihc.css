@@ -24,3 +24,11 @@
 .accordion-body p {
 	font-size: 16px !important;
 }
+
+#wpbody .error {
+	display: none !important;
+}
+
+#wpbody .notice {
+	display: none !important;
+}

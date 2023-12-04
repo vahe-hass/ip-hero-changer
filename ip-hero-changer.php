@@ -164,21 +164,42 @@ function ihc_db_row_query($row_id) {
         }
 
         $user_city_clean = stripslashes($user_city);
-        return array($user_country, $user_city_clean, $user_option, $user_color, $button_id, $user_viewed, $user_clicked);   } else {
-        $ihc_line = __LINE__ - 15;
-        ihc_log_error('The sql query for ihc_proceess_db_query function returned an empty array', $ihc_line);
+        return array($user_country,
+                     $user_city_clean,
+                     $user_option,
+                     $user_color,
+                     $button_id,
+                     $user_viewed,
+                     $user_clicked);
+    } else {
         return array();
     }
 
-};
+}
 
 // Add an admin menu admin page
 function ihc_admin_page() {
     $admin_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-admin.html';
 
-
     $option_b_row = ihc_db_row_query(1);
     $option_a_row = ihc_db_row_query(2);
+
+    $ihc_active_plugins = get_option('active_plugins');
+    $ihc_active_plugin_list = array();
+    $ihc_known_caching_plugins = array('litespeed-cache.php', 'w3-total-cache.php', 'wp-optimize.php', 'wp-cache.php', 'wp-rocket.php', 'redis-cache.php', 'sg-cachepress.php', 'wp-cloudflare-super-page-cache.php', 'wpFastestCache.php', 'autoptimize.php');
+
+    foreach ($ihc_active_plugins as $plugin) {
+        $plugin_name = basename($plugin);
+        $ihc_active_plugin_list[] = $plugin_name;
+    }
+
+    $common_plugin_values = array_intersect($ihc_known_caching_plugins, $ihc_active_plugin_list);
+
+    if (!empty($common_plugin_values)) {
+        $caching_plugins_error = "IP Hero Changer detected an active caching plugin. Unfortunately, as a dynamic plugin, IP Hero Changer can not perform optimally when a page caching or caching plugin is active. Kindly deactivate it for an enhanced experience.";
+    } else {
+        $caching_plugins_error = "";
+    }
 
     if (empty($option_b_row)) {
         $empty_database = "Don't forget to save your configuration so that the IP Hero Changer plugin can begin its tasks.";
@@ -384,12 +405,12 @@ function ihc_styles_generator_b($ihc_sql_color, $ihc_sql_btn_id) {
     $elementor_check = ihc_elementor_check();
     $cleaned_btn_id = str_replace('#', '', $ihc_sql_btn_id);
     if ( $elementor_check ) {
-        echo "<style type='text/css'>" .
+        echo "<style type='text/css' id='ihc-custom-css'>" .
             $ihc_sql_btn_id . " .elementor-button {
                 background-color: " . $ihc_sql_color . " !important;
             }
         </style>";
-        echo "<script>
+        echo "<script id='ihc-custom-js'>
                 document.addEventListener('DOMContentLoaded', function() {
                 var ihcfirstBtn = document.getElementById('$cleaned_btn_id');
                 if (ihcfirstBtn) {
@@ -398,12 +419,12 @@ function ihc_styles_generator_b($ihc_sql_color, $ihc_sql_btn_id) {
             });
             </script>";
     } else {
-        echo "<style type='text/css'>" .
+        echo "<style type='text/css' id='ihc-custom-css'>" .
             $ihc_sql_btn_id .  " .wp-block-button a {
                 background-color: " . $ihc_sql_color . " !important;
             }
         </style>";
-        echo "<script>
+        echo "<script id='ihc-custom-js'>
                 document.addEventListener('DOMContentLoaded', function() {
                 var ihcfirstBtn = document.getElementById('$cleaned_btn_id');
                 if (ihcfirstBtn) {
