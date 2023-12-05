@@ -41,7 +41,6 @@ function ip_hero_changer_table() {
      if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
          $charset_collate = $wpdb->get_charset_collate();
 
-         // Define the table structure
          $sql = "CREATE TABLE $table_name (
             id INT NOT NULL AUTO_INCREMENT,
             user_region varchar(255) NOT NULL,

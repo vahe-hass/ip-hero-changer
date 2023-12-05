@@ -2,33 +2,26 @@
 	max-width: none !important;
 	padding: 0 !important;
 }
-
 .ihc-canvas {
     max-height: 425px;
     width: 100%;
 }
-
 .ctr-a {
 	background-color: #1CC88A !important;
 }
-
 .ctr-b {
 	background-color: #4E73DF !important;
 }
-
 #ihc-accordion-1 .accordion-button {
 	font-size: 1.5rem !important;
 	font-weight: bold;
 }
-
 .accordion-body p {
 	font-size: 16px !important;
 }
-
 #wpbody .error {
 	display: none !important;
 }
-
 #wpbody .notice {
 	display: none !important;
 }

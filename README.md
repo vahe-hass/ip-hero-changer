@@ -5,8 +5,9 @@ IP Hero Changer is a WordPress plugin designed for A/B testing the first button 
 ## Features
 
 - A/B testing for the first button in the hero section.
-- Customization options include region, country, and state.
+- Customization options include region, country, and city.
 - Dynamically change the color of the first button based on the visitor's IP address.
+- Monitor the click-through rates directly from your admin dashboard.
 
 ## Installation
 
@@ -17,13 +18,13 @@ IP Hero Changer is a WordPress plugin designed for A/B testing the first button 
 
 1. Navigate to the WordPress admin dashboard.
 2. Go to the IP Hero Changer settings.
-3. Select the desired options for region, country, and state.
+3. Select the desired options for region, country, and city.
 4. Save your changes.
 5. Visit the homepage to see the A/B testing in action.
 
 ## Requirements
 
-- WordPress 5.2 or higher.
+- WordPress 6.0 or higher.
 - Elementor (if used with Elementor-built pages).
 
 ## Frequently Asked Questions
@@ -42,7 +43,7 @@ The plugin uses the visitor's IP address to determine their geographic location.
 
 ## Support
 
-For any issues or questions, please [submit a support ticket](https://vahegrikorihassratian.com/).
+For any issues or questions, please [submit a support ticket](https://vahegrikorihassratian.com/plugins/ip-hero-changer/#support).
 
 ## Changelog
 
