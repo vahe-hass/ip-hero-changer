@@ -3,7 +3,7 @@
  * Plugin Name: IP Hero Changer
  * Plugin URI: https://vahegrikorihassratian.com/plugins/ip-hero-changer/
  * Description: A WordPress plugin to change the hero section button colors based on IP.
- * Version: 1.0.0
+ * Version: 1.0
  * Requires at least: 6.0
  * Requires PHP: 7.2
  * Author: Vahe Grikorihassratian
@@ -246,9 +246,9 @@ add_action('admin_menu', 'ihc_add_admin_menu');
 
 function ihc_render_documentation_page() {
     $doc_template_path = plugin_dir_path(__FILE__) . 'templates/ihc-docs.html';
-    $ihc_img1 = plugins_url('assets/images/ihc-elem-docs.jpg', __FILE__);
-    $ihc_img2 = plugins_url('assets/images/ihc-wp-docs.jpg', __FILE__);
-    $ihc_img3 = plugins_url('assets/images/ihc-form-docs.jpg', __FILE__);
+    $ihc_img1 = plugins_url('assets/screenshot-1.jpg', __FILE__);
+    $ihc_img2 = plugins_url('assets/screenshot-2.jpg', __FILE__);
+    $ihc_img3 = plugins_url('assets/screenshot-3.jpg', __FILE__);
 
 
     if (file_exists($doc_template_path)) {

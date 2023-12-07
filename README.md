@@ -47,7 +47,7 @@ For any issues or questions, please [submit a support ticket](https://vahegrikor
 
 ## Changelog
 
-### 1.0.0
+### 1.0
 - Initial release.
 
 ## License
