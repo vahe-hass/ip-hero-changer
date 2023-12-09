@@ -1,6 +1,0 @@
-
-2023-12-04 06:48:09 - Line 358: cURL error 28: Operation timed out after 5010 milliseconds with 0 out of 0 bytes received
-2023-12-04 06:54:25 - Line 153: The sql query for ihc_proceess_db_query function returned an empty array
-2023-12-04 06:54:25 - Line 153: The sql query for ihc_proceess_db_query function returned an empty array
-2023-12-04 17:34:28 - Line 153: The sql query for ihc_proceess_db_query function returned an empty array
-2023-12-04 17:34:28 - Line 153: The sql query for ihc_proceess_db_query function returned an empty array
